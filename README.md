@@ -6,20 +6,20 @@ A FastAPI-based streaming inference service that ingests user events, performs b
 - Python 3.13 (project venv included under `venv/`)
 - macOS or Linux recommended
 
-## Quick start
+## Quick start (Docker)
 ```bash
-# 1) Activate the provided virtual environment
-source "./venv/bin/activate"
+# 1) Download the repository ZIP from GitHub and unzip it
+#    Alternatively: git clone <repo-url>
 
-# 2) Install any missing deps (aiosqlite already installed in venv)
-pip install -U pip
-pip install aiosqlite fastapi uvicorn requests torch
+# 2) In the project directory, build the Docker image
+docker build -t streaming-service .
 
-# 3) Create a sample model file (optional)
-python create_model.py
+# 3) Run the container mapping host port 8000 to container port 8000
+docker run --rm -p 8000:8000 streaming-service
 
-# 4) Run the API server
-uvicorn main:app --host 0.0.0.0 --port 8000
+# 4) Verify the server is running
+curl http://localhost:8000/health
+# API docs: http://localhost:8000/docs
 ```
 
 ## Configuration
