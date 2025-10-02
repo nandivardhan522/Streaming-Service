@@ -60,7 +60,10 @@ async def on_startup():
     )
 '''
 
-
+import os
+import subprocess
+import sys
+import torch
 import asyncio
 import logging
 import time
@@ -86,8 +89,28 @@ metrics = Metrics(maxlen=settings.METRICS_MAXLEN)
 
 counters: Dict[str, int] = dict(total_events=0, accepted=0, rejected=0, scored=0)
 
+'''
 # Model & runner
 model = InefficientModel()
+runner = TorchModelRunner(model)'''
+
+MODEL_WEIGHTS = "inefficient_model.pth"
+
+def ensure_weights_file():
+    if not os.path.exists(MODEL_WEIGHTS):
+        # run your script with the current interpreter
+        subprocess.run([sys.executable, "create_model.py"], check=True)
+
+def load_model(in_dim=3) -> InefficientModel:
+    m = InefficientModel(in_dim)
+    state = torch.load(MODEL_WEIGHTS, map_location="cpu")   # loads dict of tensors
+    m.load_state_dict(state)                                # attach weights
+    m.eval()
+    return m
+
+# ---- app startup ----
+ensure_weights_file()
+model = load_model(3)
 runner = TorchModelRunner(model)
 
 # FastAPI app
